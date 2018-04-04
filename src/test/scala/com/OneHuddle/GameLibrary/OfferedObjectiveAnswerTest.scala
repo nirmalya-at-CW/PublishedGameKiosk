@@ -1,8 +1,8 @@
-package com.OneHuddle.Quiz.preparation.parsing
+package com.OneHuddle.GameLibrary
 
+import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AllOfTheAboveObjectiveAnswer, AnswersAvailableInDB, NoneOfTheAboveObjectiveAnswer, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
+import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
 import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizButler}
-import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID, LibraryUtilities, QnAShelf}
-import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AnswersAvailableInDB, NoneOfTheAboveObjectiveAnswer, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, PossibleAnswer, Question, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
 import org.json4s.ShortTypeHints
 import org.json4s.jackson.Serialization
 import org.scalatest.{BeforeAndAfterAll, FunSuite, MustMatchers}
@@ -48,7 +48,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
       RawQuestionAnswerScoreTriple("What is the capital of India?","{\"subjective\":null,\"objective\":{\"options\":[{\"New Delhi\":\"Y\"},{\"Mumbai\":\"N\"},{\"Chennai\":\"N\"},{\"Calcutta\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",100),
       RawQuestionAnswerScoreTriple("When did India achieve her indepdence?","{\"subjective\":null,\"objective\":{\"options\":[{\"1977\":\"N\"},{\"1967\":\"N\"},{\"1947\":\"Y\"},{\"1997\":\"N\"},{\"2007\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",200),
       RawQuestionAnswerScoreTriple("When did India become a republic?","{\"subjective\":null,\"objective\":{\"options\":[{\"1977\":\"N\"},{\"1967\":\"N\"},{\"1950\":\"Y\"},{\"1957\":\"N\"},{\"2007\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",200),
-      RawQuestionAnswerScoreTriple("Where is the financial capital of India?","{\"subjective\":null,\"objective\":{\"options\":[{\"Bangalore\":\"N\"},{\"Calcutta\":\"N\"},{\"Mumbai\":\"Y\"}]},\"total_options\":0,\"correct_options\":0}}",300),
+      RawQuestionAnswerScoreTriple("Which of the following is Tier-I city in India","{\"subjective\":null,\"objective\":{\"options\":[{\"Bangalore\":\"Y\"},{\"Calcutta\":\"Y\"},{\"Mumbai\":\"Y\"},{\"Chennai\":\"Y\"}]},\"total_options\":0,\"correct_options\":0}}",300),
       RawQuestionAnswerScoreTriple("What is the National Animal of India?","{\"subjective\":null,\"objective\":{\"options\":[{\"Lion\":\"N\"},{\"Royal Bengal Tiger\":\"Y\"},{\"Elephant\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",400),
       RawQuestionAnswerScoreTriple("Which is the longest river in India?","{\"subjective\":null,\"objective\":{\"options\":[{\"Brahmaputra\":\"N\"},{\"Narmada\":\"N\"},{\"Ganga\":\"Y\"},{\"Kaveri\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",400),
       RawQuestionAnswerScoreTriple("What is the National Bird of India?","{\"subjective\":null,\"objective\":{\"options\":[{\"Myna\":\"N\"},{\"Eagle\":\"N\"},{\"Swan\":\"N\"},{\"Crow\":\"N\"},{\"Parakeet\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",500)
@@ -218,7 +218,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   }
 
-  test("When an answer has all incorrect options, an option for none of the above must be offered") {
+  test("When an answer has all correct options, an option for all of the above must be offered") {
 
     val quizButler = new QuizButler(library)
 
@@ -235,16 +235,16 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     assert(ordered.length === 5)
 
-    assert(ordered(4)._1 === 500)
-    assert(ordered(4)._2.isEmpty === false)
-    assert(ordered(4)._2.get._1.humanReadableQuestionText  === "What is the National Bird of India?")
+    assert(ordered(2)._1 === 300)
+    assert(ordered(2)._2.isEmpty === false)
+    assert(ordered(2)._2.get._1.humanReadableQuestionText  === "Which of the following is Tier-I city in India")
 
-    val allAnswers = ordered(4)._2.get._2.toIndexedSeq
+    val allAnswers = ordered(2)._2.get._2.toIndexedSeq
 
-    assert(allAnswers(0) === ObjectiveIncorrectAnswer("Myna"))
-    assert(allAnswers(1) === ObjectiveIncorrectAnswer("Eagle"))
-    assert(allAnswers(2) === ObjectiveIncorrectAnswer("Swan"))
-    assert(allAnswers(3) === NoneOfTheAboveObjectiveAnswer)
+    assert(allAnswers(0) === ObjectiveCorrectAnswer("Bangalore"))
+    assert(allAnswers(1) === ObjectiveCorrectAnswer("Calcutta"))
+    assert(allAnswers(2) === ObjectiveCorrectAnswer("Mumbai"))
+    assert(allAnswers(3) === AllOfTheAboveObjectiveAnswer)
 
   }
 

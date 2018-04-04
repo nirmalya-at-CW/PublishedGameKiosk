@@ -24,9 +24,9 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
 
     this.bucketwiseQnAPairs = scoreBucketIDs.foldLeft(initializedEmptyOfferedSet)((accu,bucket) => {
 
-      val pickedQuesAndObjectiveAnswers = shelf.pickAvailableObjectiveAnswersWithQuestions(fromScoreBucket = bucket,countOptionsPerAns)
+      val pickedQuesAndObjectiveAnswers = shelf.pickAvailableObjectiveAnswersWithQuestions(fromScoreBucket = bucket,countQues = 1, countOptionsPerAns)
       if (!pickedQuesAndObjectiveAnswers.isEmpty)
-        accu   +  (bucket -> Some(pickedQuesAndObjectiveAnswers.get._1, pickedQuesAndObjectiveAnswers.get._2))
+        accu   +  (bucket -> Some(pickedQuesAndObjectiveAnswers.get.head)) // Remember, We asked for '1' question/answer pair!
       else
         accu
 
@@ -41,25 +41,12 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
   // contains unassigned buckets.
   def fillInLeftOverEmptyScoreBuckets: OfferedObjectiveQuestionAndAnswerForQuiz  = {
 
+    val splitIntoEmptyOrNot = this.bucketwiseQnAPairs.partition(e => e._2.isEmpty)
 
-    val splitIntoEmptyOrNot = this.bucketwiseQnAPairs.span(e => e._2.isEmpty)
 
     if (!splitIntoEmptyOrNot._1.isEmpty) {  // one or more buckets are still empty
 
-      val filledBucketsWithRandomQuestions =
-        splitIntoEmptyOrNot
-          ._1
-          .map(e => e._1)   // We need the bucket identifiers only, viz, 100,200, etc.
-          .map(bucket => {
-
-          // '0' is bucketID of random questions, by convention
-          val anotherRandomObjectiveQandAPair = shelf.pickAvailableObjectiveAnswersWithQuestions(fromScoreBucket = 0, countOfOptionsPerAnswer = 1)
-          if (!anotherRandomObjectiveQandAPair.isEmpty)
-            (bucket,Some(anotherRandomObjectiveQandAPair.get._1, anotherRandomObjectiveQandAPair.get._2))
-          else
-            (bucket,None)
-
-        }).toMap
+      val filledBucketsWithRandomQuestions = shelf.fillWithRandomlyChosenQandAns(splitIntoEmptyOrNot._1,countOptionsPerAns)
 
       this.bucketwiseQnAPairs = this.bucketwiseQnAPairs ++ filledBucketsWithRandomQuestions
       this

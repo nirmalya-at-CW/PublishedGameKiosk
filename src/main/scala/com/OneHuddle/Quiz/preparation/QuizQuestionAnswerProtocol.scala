@@ -87,6 +87,8 @@ object QuizQuestionAnswerProtocol {
     def pickAvailableObjectiveAnswers(): List[ObjectiveAnswer]
   }
 
+  type QAndObjAnswers = (Question,List[ObjectiveAnswer])
+
   // implicit val formats = DefaultFormats
 
   implicit val formats_2 = Serialization.formats(
