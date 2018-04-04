@@ -5,13 +5,15 @@ import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
 import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AnswersAvailableInDB, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, Question, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
 import org.json4s.ShortTypeHints
 import org.json4s.jackson.Serialization
-import org.scalatest.{BeforeAndAfterAll, FunSuite, MustMatchers}
+import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers, MustMatchers}
+import org.scalactic.Explicitly._
+import org.scalactic.StringNormalizations._
 
 /**
   * Created by nirmalya on 4/3/18.
   */
 class RandomQuestionChoiceTestSuite extends FunSuite
-  with MustMatchers
+  with Matchers
   with BeforeAndAfterAll {
 
   implicit val f = org.json4s.DefaultFormats
@@ -43,19 +45,31 @@ class RandomQuestionChoiceTestSuite extends FunSuite
       RawQuestionAnswerScoreTriple("What is the square root of -1 called","{\"subjective\":null,\"objective\":{\"options\":[{\"Natural Number\":\"N\"},{\"Unnatural Number\":\"N\"},{\"Perfect Number\":\"N\"},{\"Imaginary Number\":\"Y\"}]},\"total_options\":0,\"correct_options\":0}}",500)
     )
 
+  val questAndAnsProcessedCategorySimpleGeography =
+    List(
+      RawQuestionAnswerScoreTriple("What is the latitude at equator?","{\"subjective\":null,\"objective\":{\"options\":[{\"3\":\"N\"},{\"4\":\"N\"},{\"5\":\"N\"},{\"0\":\"Y\"},{\"2\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",0),
+      RawQuestionAnswerScoreTriple("How much time does earth take around itself once?","{\"subjective\":null,\"objective\":{\"options\":[{\"4h\":\"N\"},{\"5h\":\"N\"},{\"6h\":\"N\"},{\"24h\":\"Y\"},{\"0h\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",0),
+      RawQuestionAnswerScoreTriple("In which ocean or sea, one finds the Cape of Good Hope?","{\"subjective\":null,\"objective\":{\"options\":[{\"Pacific\":\"N\"},{\"Atlantic\":\"N\"},{\"North\":\"N\"},{\"Indian\":\"Y\"}]},\"total_options\":0,\"correct_options\":0}}",0),
+      RawQuestionAnswerScoreTriple("In which country is the volcano Visuvius located?","{\"subjective\":null,\"objective\":{\"options\":[{\"Italy\":\"Y\"},{\"Spain\":\"N\"},{\"Greece\":\"N\"},{\"Turkey\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",0),
+      RawQuestionAnswerScoreTriple("Which country is called the Nippon?","{\"subjective\":null,\"objective\":{\"options\":[{\"South Korea\":\"N\"},{\"China\":\"N\"},{\"Japan\":\"Y\"},{\"HongKong\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",0),
+      RawQuestionAnswerScoreTriple("Which island nation is called the Emerald Isle?","{\"subjective\":null,\"objective\":{\"options\":[{\"Mauritiaus\":\"N\"},{\"Macau\":\"N\"},{\"Secychelles\":\"N\"},{\"SriLanka\":\"Y\"}]},\"total_options\":0,\"correct_options\":0}}",0)
+    )
+
   def dummyQuesRandomizer  (l: List[QuestionAnswerPairPack]): List[QuestionAnswerPairPack] = l
   def dummyAnsRandomizer   (l: List[ObjectiveAnswer]):        List[ObjectiveAnswer]        = l
 
-  val shelfIDForWorldHistoryUSEnglish  = GameLibraryShelfID(1003,"World History","en_us")
-  val shelfIDForSimpleMathsUSEnglish  = GameLibraryShelfID(1004,"Simple Maths","en_us")
+  val shelfIDForWorldHistoryUSEnglish     = GameLibraryShelfID(1003,"World History","en_us")
+  val shelfIDForSimpleMathsUSEnglish      = GameLibraryShelfID(1004,"Simple Maths","en_us")
+  val shelfIDForSimpleGeographyUSEnglish  = GameLibraryShelfID(1005,"Simple Geo","en_us")
 
   val library =
     GameLibrary(
       dummyQuesRandomizer,
       dummyAnsRandomizer
     )
-      .arrangeAShelf(shelfIDForWorldHistoryUSEnglish, questAndAnsProcessedCategoryWorldHistory)
-      .arrangeAShelf(shelfIDForSimpleMathsUSEnglish, questAndAnsProcessedCategorySimpleMaths)
+      .arrangeAShelf(shelfIDForWorldHistoryUSEnglish,    questAndAnsProcessedCategoryWorldHistory)
+      .arrangeAShelf(shelfIDForSimpleMathsUSEnglish,     questAndAnsProcessedCategorySimpleMaths)
+      .arrangeAShelf(shelfIDForSimpleGeographyUSEnglish, questAndAnsProcessedCategorySimpleGeography)
 
   test("When a score bucket is missing from question-set, a random question fills in its place correctly") {
 
@@ -80,9 +94,10 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
   }
 
-  test("When more than 1 random questions are to be selected, the buckets are filled in correctly") {
+  test("When more than 1 random scorable questions are to be selected, the buckets are filled in correctly") {
 
     val quizButler = new QuizButler(library)
+
 
     val shelf = library.reachShelf(shelfIDForSimpleMathsUSEnglish).get
 
@@ -112,7 +127,87 @@ class RandomQuestionChoiceTestSuite extends FunSuite
     assert(ordered(3)._1 === 400)
     assert(ordered(3)._2.isEmpty === false)
     assert(ordered(3)._2.get._1.humanReadableQuestionText  === "What is the GCD of 9 and 21?")
+  }
 
+  test("When only buckets 100 & 500 are provided (and rest are all random scorable questions), the buckets are filled in correctly") {
+
+    val quizButler = new QuizButler(library)
+
+    val allZeroScoredQ = questAndAnsProcessedCategorySimpleMaths
+      .filter(e => e.score == 0)
+      .map(e => e.ques)
+
+
+    val shelf = library.reachShelf(shelfIDForSimpleMathsUSEnglish).get
+
+    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+
+    val ordered =
+      offered
+        .fillInScoreBuckets
+        .fillInLeftOverEmptyScoreBuckets
+        .ensureCorrectAnswerIsEmbeddedAsNecessary
+        .arrangeInOrderOfScores
+
+    assert(ordered.length === 5)
+
+    assert(ordered(0)._1 === 100)
+    assert(ordered(1)._1 === 200)
+    assert(ordered(2)._1 === 300)
+    assert(ordered(3)._1 === 400)
+    assert(ordered(4)._1 === 500)
+
+    assert(ordered(0)._2.isEmpty === false)
+    assert(ordered(0)._2.get._1.humanReadableQuestionText  === "What is 1+1 = ?")
+    assert(ordered(4)._2.isEmpty === false)
+    assert(ordered(4)._2.get._1.humanReadableQuestionText  === "What is the square root of -1 called")
+
+    assert(allZeroScoredQ.length == 4)
+    allZeroScoredQ should contain allOf (
+                                    ordered(1)._2.get._1.humanReadableQuestionText,
+                                    ordered(2)._2.get._1.humanReadableQuestionText,
+                                    ordered(3)._2.get._1.humanReadableQuestionText
+    )
+
+
+  }
+
+  test("When all buckets are of random scorable questions and 5 questions are asked for, the buckets are filled in correctly") {
+
+    val quizButler = new QuizButler(library)
+
+    val allZeroScoredQ = questAndAnsProcessedCategorySimpleGeography
+      .filter(e => e.score == 0)
+      .map(e => e.ques)
+
+
+    val shelf = library.reachShelf(shelfIDForSimpleGeographyUSEnglish).get
+
+    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+
+    val ordered =
+      offered
+        .fillInScoreBuckets
+        .fillInLeftOverEmptyScoreBuckets
+        .ensureCorrectAnswerIsEmbeddedAsNecessary
+        .arrangeInOrderOfScores
+
+    assert(ordered.length === 5)
+
+    assert(ordered(0)._1 === 100)
+    assert(ordered(1)._1 === 200)
+    assert(ordered(2)._1 === 300)
+    assert(ordered(3)._1 === 400)
+    assert(ordered(4)._1 === 500)
+
+    assert(allZeroScoredQ.length == 6)
+    allZeroScoredQ should contain allOf (
+      ordered(0)._2.get._1.humanReadableQuestionText,
+      ordered(1)._2.get._1.humanReadableQuestionText,
+      ordered(2)._2.get._1.humanReadableQuestionText,
+      ordered(3)._2.get._1.humanReadableQuestionText,
+      ordered(4)._2.get._1.humanReadableQuestionText
+    )
 
 
   }
