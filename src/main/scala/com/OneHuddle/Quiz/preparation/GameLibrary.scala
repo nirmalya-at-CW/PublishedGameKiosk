@@ -66,8 +66,6 @@ case class QnAShelf(
       // Important: Bucket '0 ' contains all random-scorable questions
       val pickedRandomQandA = flattenAnswersAndPairWithQ(this.qRandomizer(this.questionsByScore(0)))
 
-      val k = (emptyBuckets zip pickedRandomQandA)
-
       (emptyBuckets zip pickedRandomQandA).foldLeft(Map[Int,Option[QAndObjAnswers]]())((accu,nextZippedEntry) => {
 
          val quesNansWithAnswerOptionsShortened =  optionsPlucker(nextZippedEntry._2)
@@ -98,9 +96,6 @@ case class QnAShelf(
 
 
 }
-
-
-case class Quiz() { }
 
 object GameLibrary {
 

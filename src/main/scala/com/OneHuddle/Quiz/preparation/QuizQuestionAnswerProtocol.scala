@@ -2,6 +2,10 @@ package com.OneHuddle.Quiz.preparation
 
 import org.json4s.ShortTypeHints
 import org.json4s.jackson.Serialization
+import org.json4s._
+import org.json4s.JsonDSL._
+import org.json4s.jackson.JsonMethods._
+
 
 import scala.{Option => ScalaOption}
 
@@ -87,17 +91,43 @@ object QuizQuestionAnswerProtocol {
     def pickAvailableObjectiveAnswers(): List[ObjectiveAnswer]
   }
 
+  case class  ReadableAnswerWithCorrectnessIndicated(val humanReadableAnswerText: String, val isCorrect: String) {
+    def toJson = {
+      ("text" -> humanReadableAnswerText) ~ ("isCorrect" -> isCorrect)
+    }
+  }
+  object UneadableAnswerWithCorrectnessIndicated extends ReadableAnswerWithCorrectnessIndicated("NA","NA")
+  sealed trait DisplayableQuestionAndAnswer
+  case class DisplayableSubjectiveQuestionAndAnswer(marks: Int, q: String,   a: String) extends DisplayableQuestionAndAnswer {
+    def toJason = {
+      ("marks" -> marks) ~ ("question" -> q) ~ ("answer" -> a)
+    }
+  }
+  case class DisplayableObjectiveQuestionAndAnswer (marks: Int, q: String,   a: List[ReadableAnswerWithCorrectnessIndicated]) extends DisplayableQuestionAndAnswer {
+    def toJson = {
+      ("marks" -> marks) ~ ("question" -> q) ~ ("answers" -> a.map(e => e.toJson))
+    }
+  }
+  object IncorrectShelfNonDisplayableSubjectiveQuestionAndAnswer extends DisplayableSubjectiveQuestionAndAnswer(-1,"Incorrect shelfID","Incorrect shelfID")
+  object UnavailableDisplayableSubjectiveQuestionAndAnswer extends DisplayableSubjectiveQuestionAndAnswer(-1,"No question found","No answer found")
+  object IncorrectShelfForDisplayableObjectiveQuestionAndAnswer extends DisplayableObjectiveQuestionAndAnswer(-1,"Incorrect shelfID",List[ReadableAnswerWithCorrectnessIndicated]())
+  object UnavailableDisplayableObjectiveQuestionAndAnswer extends DisplayableObjectiveQuestionAndAnswer(-1,"No question found",List[ReadableAnswerWithCorrectnessIndicated]())
+
+
   type QAndObjAnswers = (Question,List[ObjectiveAnswer])
 
   // implicit val formats = DefaultFormats
 
   implicit val formats_2 = Serialization.formats(
-    ShortTypeHints(
-      List(
-        classOf[AnswersAvailableInDB]
+      ShortTypeHints(
+        List(
+          classOf[AnswersAvailableInDB],
+          classOf[DisplayableSubjectiveQuestionAndAnswer],
+          classOf[DisplayableObjectiveQuestionAndAnswer],
+          classOf[ReadableAnswerWithCorrectnessIndicated]
+        )
       )
     )
-  )
 
 
 }

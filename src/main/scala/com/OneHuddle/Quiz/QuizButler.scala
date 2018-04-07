@@ -2,24 +2,19 @@ package com.OneHuddle.Quiz
 
 
 import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
-import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, OnlyTFTypeObjectiveAnswer, Question, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple, SubjectiveCorrectAnswer}
+import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{DisplayableObjectiveQuestionAndAnswer, DisplayableSubjectiveQuestionAndAnswer, IncorrectShelfForDisplayableObjectiveQuestionAndAnswer, IncorrectShelfNonDisplayableSubjectiveQuestionAndAnswer, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, OnlyTFTypeObjectiveAnswer, Question, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple, ReadableAnswerWithCorrectnessIndicated, SubjectiveCorrectAnswer, UnavailableDisplayableObjectiveQuestionAndAnswer, UnavailableDisplayableSubjectiveQuestionAndAnswer}
 
 /**
   * Created by nirmalya on 3/22/18.
   */
 
 
-case class  ReadableAnswerWithCorrectnessIndicated(val humanReadableAnswerText: String, val isCorrect: String)
-sealed trait DisplayableQuestionAndAnswer
-case class DisplayableSubjectiveQuestionAndAnswer(marks: Int, q: String,   a: String) extends DisplayableQuestionAndAnswer
-case class DisplayableObjectiveQuestionAndAnswer (marks: Int, q: String,   a: List[ReadableAnswerWithCorrectnessIndicated]) extends DisplayableQuestionAndAnswer
-
 class QuizButler(val library: GameLibrary) {
 
 
   def drawUpASubjectiveQuiz(
           shelfID: GameLibraryShelfID, numQuestionsReqd: Int):
-          IndexedSeq[Option[DisplayableSubjectiveQuestionAndAnswer]] = {
+          IndexedSeq[DisplayableSubjectiveQuestionAndAnswer] = {
 
     this.library.reachShelf(shelfID) match {
 
@@ -30,14 +25,14 @@ class QuizButler(val library: GameLibrary) {
                              .arrangeInOrderOfScores
                              .map(pressIntoDisplayableFormSubjective)
 
-      case None         =>  IndexedSeq(None)   // shelf is empty
+      case None         =>  IndexedSeq(IncorrectShelfNonDisplayableSubjectiveQuestionAndAnswer)   // shelf is empty or incorrect
     }
 
   }
 
   def drawUpAnObjectiveQuiz(
             shelfID: GameLibraryShelfID, numQuestionsReqd: Int,optionsPerAnswer: Int):
-            IndexedSeq[Option[DisplayableObjectiveQuestionAndAnswer]] = {
+            IndexedSeq[DisplayableObjectiveQuestionAndAnswer] = {
 
     this.library.reachShelf(shelfID) match {
 
@@ -49,7 +44,7 @@ class QuizButler(val library: GameLibrary) {
           .arrangeInOrderOfScores
           .map(pressIntoDisplayableFormObjective)
 
-      case None         =>  IndexedSeq(None)   // shelf is empty
+      case None         =>  IndexedSeq(IncorrectShelfForDisplayableObjectiveQuestionAndAnswer)   // shelf is empty or incorrect
     }
 
   }
@@ -65,47 +60,35 @@ class QuizButler(val library: GameLibrary) {
   }
 
   private
-  def pressIntoDisplayableFormSubjective(offeredForm: (Int, Option[(Question,SubjectiveCorrectAnswer)])): Option[DisplayableSubjectiveQuestionAndAnswer] = {
+  def pressIntoDisplayableFormSubjective(offeredForm: (Int, Option[(Question,SubjectiveCorrectAnswer)])): DisplayableSubjectiveQuestionAndAnswer = {
 
       offeredForm._2 match {
 
-         case Some(quesAndAns)         =>   Some(
+         case Some(quesAndAns)         =>
            DisplayableSubjectiveQuestionAndAnswer(
              quesAndAns._1.score,                       // score
              quesAndAns._1.humanReadableQuestionText,   // question
              quesAndAns._2.humanReadableAnswerText)     // answer
-         )
 
-         case None                     =>    Some(
-           DisplayableSubjectiveQuestionAndAnswer(
-             -1,
-             "No questions offered",
-             "No answers offered"
-           )
-         )
+         case None                     =>
+           UnavailableDisplayableSubjectiveQuestionAndAnswer
 
       }
   }
 
   private
-  def pressIntoDisplayableFormObjective(offeredForm: (Int, Option[(Question,List[ObjectiveAnswer])])): Option[DisplayableObjectiveQuestionAndAnswer] = {
+  def pressIntoDisplayableFormObjective(offeredForm: (Int, Option[(Question,List[ObjectiveAnswer])])): DisplayableObjectiveQuestionAndAnswer = {
 
     offeredForm._2 match {
 
-      case Some(qNa) => Some(
+      case Some(qNa) =>
         DisplayableObjectiveQuestionAndAnswer(
           qNa._1.score,
           qNa._1.humanReadableQuestionText,
           qNa._2.map(indicateCorrectness)
         )
-      )
-      case None      =>  Some(
-        DisplayableObjectiveQuestionAndAnswer(
-          -1,
-          "No questions offered",
-          List[ReadableAnswerWithCorrectnessIndicated]()
-        )
-      )
+      case None      =>
+        UnavailableDisplayableObjectiveQuestionAndAnswer
 
     }
   }

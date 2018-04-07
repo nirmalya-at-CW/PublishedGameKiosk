@@ -23,6 +23,14 @@ class OfferedObjectiveAnswerTest extends FunSuite
     )
   )
 
+  val subjectiveQuestionAndAnswerSet =
+    List(
+
+      RawQuestionAnswerScoreTriple("Who won the FIFA WC in 2002?","{\"subjective\":\"Brazil\",\"objective\":null,\"total_options\":0,\"correct_options\":0}}",100),
+      RawQuestionAnswerScoreTriple("When did India qualify for the world cup last time?","{\"subjective\":\"1950\",\"objective\":null,\"total_options\":0,\"correct_options\":0}}",200),
+      RawQuestionAnswerScoreTriple("Where will the finals of WC 2018 be held?","{\"subjective\":\"Moscow,Russia\",\"objective\":null,\"total_options\":0,\"correct_options\":0}}",300),
+      RawQuestionAnswerScoreTriple("Where in Africa were the finals of FIFA WC held first time?","{\"subjective\":\"Republic of South Africa\",\"objective\":null,\"total_options\":0,\"correct_options\":0}}",400)
+    )
 
   val questAndAnsProcessedCategoryWorldHistory =
     List(
@@ -40,7 +48,8 @@ class OfferedObjectiveAnswerTest extends FunSuite
       RawQuestionAnswerScoreTriple("Who won the FIFA WC in 2002?","{\"subjective\":null,\"objective\":{\"options\":[{\"England\":\"N\"},{\"India\":\"N\"},{\"Brazil\":\"Y\"},{\"Germany\":\"N\"},{\"Spain\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",100),
       RawQuestionAnswerScoreTriple("When did India qualify for the world cup last time?","{\"subjective\":null,\"objective\":{\"options\":[{\"1978\":\"N\"},{\"1964\":\"N\"},{\"1950\":\"Y\"},{\"1990\":\"N\"},{\"2010\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",200),
       RawQuestionAnswerScoreTriple("Where will the finals of WC 2018 be held?","{\"subjective\":null,\"objective\":{\"options\":[{\"India\":\"N\"},{\"Mexico\":\"N\"},{\"Russia\":\"Y\"},{\"Germany\":\"N\"}]},\"total_options\":0,\"correct_options\":0}]}",300),
-      RawQuestionAnswerScoreTriple("Where in Africa were the finals of FIFA WC held first time?","{\"subjective\":null,\"objective\":{\"options\":[{\"Egypt\":\"N\"},{\"South Africa\":\"Y\"},{\"Ghana\":\"N\"},{\"Tunisia\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",400)
+      RawQuestionAnswerScoreTriple("Where in Africa were the finals of FIFA WC held first time?","{\"subjective\":null,\"objective\":{\"options\":[{\"Egypt\":\"N\"},{\"South Africa\":\"Y\"},{\"Ghana\":\"N\"},{\"Tunisia\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",400),
+      RawQuestionAnswerScoreTriple("Which countries host the World Cup in 2002?","{\"subjective\":null,\"objective\":{\"options\":[{\"England and Ireland\":\"N\"},{\"Japan and South Korea\":\"Y\"}]},\"total_options\":0,\"correct_options\":0}}",500)
     )
 
   val questAndAnsProcessedCategoryIndia =
@@ -54,12 +63,15 @@ class OfferedObjectiveAnswerTest extends FunSuite
       RawQuestionAnswerScoreTriple("What is the National Bird of India?","{\"subjective\":null,\"objective\":{\"options\":[{\"Myna\":\"N\"},{\"Eagle\":\"N\"},{\"Swan\":\"N\"},{\"Crow\":\"N\"},{\"Parakeet\":\"N\"}]},\"total_options\":0,\"correct_options\":0}}",500)
     )
 
+
+
   def dummyQuesRandomizer  (l: List[QuestionAnswerPairPack]): List[QuestionAnswerPairPack] = l
   def dummyAnsRandomizer   (l: List[ObjectiveAnswer]):        List[ObjectiveAnswer]        = l
 
   val shelfIDForSoccerUSEnglish = GameLibraryShelfID(1001,"Soccer","en_US")
   val shelfIDForIndiaUSEnglish  = GameLibraryShelfID(1002,"India","en_us")
   val shelfIDForWorldHistoryUSEnglish  = GameLibraryShelfID(1003,"World History","en_us")
+  val shelfIDForSubjectiveAnwers  = GameLibraryShelfID(1003,"Subjective Answers","en_us")
 
   val library =
     GameLibrary(
@@ -69,6 +81,8 @@ class OfferedObjectiveAnswerTest extends FunSuite
     .arrangeAShelf(shelfIDForSoccerUSEnglish,       questAndAnsProcessedCategorySoccer)
     .arrangeAShelf(shelfIDForIndiaUSEnglish,        questAndAnsProcessedCategoryIndia)
     .arrangeAShelf(shelfIDForWorldHistoryUSEnglish, questAndAnsProcessedCategoryWorldHistory)
+    .arrangeAShelf(shelfIDForSubjectiveAnwers,      subjectiveQuestionAndAnswerSet)
+
 
   test("Right order of answers is formed for marks (100), when 1 question is asked for, from the library") {
 
@@ -179,7 +193,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     assert(ordered(2)._1 === 300)
     assert(ordered(2)._2.isEmpty === false)
-    assert(ordered(2)._2.get._1.humanReadableQuestionText  === "Where is the financial capital of India?")
+    assert(ordered(2)._2.get._1.humanReadableQuestionText  === "Which of the following is Tier-I city in India")
 
     // There is another Q of score 400 in the testset after this Q, but only this Q should be chosen because we are not randomizing while testing.
     assert(ordered(3)._1 === 400)
@@ -245,6 +259,39 @@ class OfferedObjectiveAnswerTest extends FunSuite
     assert(allAnswers(1) === ObjectiveCorrectAnswer("Calcutta"))
     assert(allAnswers(2) === ObjectiveCorrectAnswer("Mumbai"))
     assert(allAnswers(3) === AllOfTheAboveObjectiveAnswer)
+
+  }
+
+  test("When an answer has only 2 options (correct and incorrect), it is included even if 4 options per questions are asked for") {
+
+    val quizButler = new QuizButler(library)
+
+    val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
+
+    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+
+    val ordered =
+      offered
+        .fillInScoreBuckets
+        .fillInLeftOverEmptyScoreBuckets
+        .ensureCorrectAnswerIsEmbeddedAsNecessary
+        .arrangeInOrderOfScores
+
+    assert(ordered.length === 5)
+
+    assert(ordered(0)._1 === 100)
+    assert(ordered(1)._1 === 200)
+    assert(ordered(2)._1 === 300)
+    assert(ordered(3)._1 === 400)
+    assert(ordered(4)._1 === 500)
+
+    assert(ordered(4)._2.isEmpty === false)
+
+    val allAnswers = ordered(4)._2.get._2.toIndexedSeq
+    assert(allAnswers.length === 2)
+
+    assert(allAnswers(0) === ObjectiveIncorrectAnswer("England and Ireland"))
+    assert(allAnswers(1) === ObjectiveCorrectAnswer("Japan and South Korea"))
 
   }
 

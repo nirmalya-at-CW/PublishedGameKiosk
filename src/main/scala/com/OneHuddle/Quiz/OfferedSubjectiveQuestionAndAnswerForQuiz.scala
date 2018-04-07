@@ -11,7 +11,7 @@ import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AllowedPerAnsw
 
 case class OfferedSubjectiveQuestionAndAnswerForQuiz(countQues: Int, shelf: QnAShelf) {
 
-  private val scoreBucketIDs = (1 to countQues) map (n => (n + 1) * 100)
+  private val scoreBucketIDs = (1 to countQues) map (n => n * 100)
 
   private val emptyOfferedSet = Map[Int,Option[(Question,SubjectiveCorrectAnswer)]]()
 

@@ -37,7 +37,7 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
 
   // At this point, 'bucketwiseQnAPairs' may have some buckets empty, because possibly, no question was provided
   // with that score, by the database. So we have to make a second run, to fill such empty buckets with questions
-  // assigned to random bucket. Conventionally, such a bucket's ID is zero (0). After the split below,left-side Map
+  // assigned to random bucket. Conventionally, such a bucket's ID is zero (0). After the partitioning below,left-side Map
   // contains unassigned buckets.
   def fillInLeftOverEmptyScoreBuckets: OfferedObjectiveQuestionAndAnswerForQuiz  = {
 
@@ -111,13 +111,13 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
   private
   def addAllOfTheAboveAsNecessary(answers: List[ObjectiveAnswer]):  List[ObjectiveAnswer] = {
 
-     answers.take(3) ++ List(AllOfTheAboveObjectiveAnswer)
+     answers.take(AllowedPerAnswer.FourOptions.id - 1) ++ List(AllOfTheAboveObjectiveAnswer)
   }
 
   private
   def addNoneOfTheAboveAsNecessary(answers: List[ObjectiveAnswer]): List[ObjectiveAnswer] = {
 
-   answers.take(3) ++ List(NoneOfTheAboveObjectiveAnswer)
+   answers.take(AllowedPerAnswer.FourOptions.id - 1) ++ List(NoneOfTheAboveObjectiveAnswer)
 
   }
 
