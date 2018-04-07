@@ -1,7 +1,7 @@
 package com.OneHuddle.GameLibrary
 
 
-import com.OneHuddle.Quiz.QuizButler
+import com.OneHuddle.Quiz.QuizDealer
 import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
 import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AnswersAvailableInDB, DisplayableObjectiveQuestionAndAnswer, DisplayableSubjectiveQuestionAndAnswer, ObjectiveAnswer, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple, ReadableAnswerWithCorrectnessIndicated}
 import org.json4s.jackson.JsonMethods._
@@ -94,9 +94,9 @@ class DrawnUpQuizTestSuite extends FunSuite
 
     implicit val f = org.json4s.DefaultFormats
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
-      val producedSubjectives = quizButler.drawUpASubjectiveQuiz(shelfIDForSubjectiveAnwers, 4)
+      val producedSubjectives = quizButler.dealASubjectiveQuiz(shelfIDForSubjectiveAnwers, 4)
 
       val expectedSubjectives = IndexedSeq(
         """{"marks":100,"question":"Who won the FIFA WC in 2002?","answer":"Brazil"}""",
@@ -115,9 +115,9 @@ class DrawnUpQuizTestSuite extends FunSuite
 
     implicit val f = org.json4s.DefaultFormats
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
-    val producedSubjectives = quizButler.drawUpASubjectiveQuiz(GameLibraryShelfID(1000,"Soccer","en-US"),4 )
+    val producedSubjectives = quizButler.dealASubjectiveQuiz(GameLibraryShelfID(1000,"Soccer","en-US"),4 )
 
     assert(producedSubjectives.length === 1)
 
@@ -132,9 +132,9 @@ class DrawnUpQuizTestSuite extends FunSuite
 
     implicit val f = org.json4s.DefaultFormats
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
-    val producedObjectives = quizButler.drawUpAnObjectiveQuiz(shelfIDForSoccerUSEnglish,4,4)
+    val producedObjectives = quizButler.dealAnObjectiveQuiz(shelfIDForSoccerUSEnglish,4,4)
 
     assert(producedObjectives.length === 4)
 

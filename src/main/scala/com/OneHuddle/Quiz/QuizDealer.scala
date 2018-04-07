@@ -9,10 +9,10 @@ import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{DisplayableObj
   */
 
 
-class QuizButler(val library: GameLibrary) {
+class QuizDealer(val library: GameLibrary) {
 
 
-  def drawUpASubjectiveQuiz(
+  def dealASubjectiveQuiz(
           shelfID: GameLibraryShelfID, numQuestionsReqd: Int):
           IndexedSeq[DisplayableSubjectiveQuestionAndAnswer] = {
 
@@ -30,7 +30,7 @@ class QuizButler(val library: GameLibrary) {
 
   }
 
-  def drawUpAnObjectiveQuiz(
+  def dealAnObjectiveQuiz(
             shelfID: GameLibraryShelfID, numQuestionsReqd: Int,optionsPerAnswer: Int):
             IndexedSeq[DisplayableObjectiveQuestionAndAnswer] = {
 

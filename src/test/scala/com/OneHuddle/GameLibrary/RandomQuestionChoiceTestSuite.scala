@@ -1,6 +1,6 @@
 package com.OneHuddle.GameLibrary
 
-import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizButler}
+import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizDealer}
 import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
 import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AnswersAvailableInDB, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, Question, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
 import org.json4s.ShortTypeHints
@@ -73,7 +73,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
   test("When a score bucket is missing from question-set, a random question fills in its place correctly") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForWorldHistoryUSEnglish).get
 
@@ -96,7 +96,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
   test("When more than 1 random scorable questions are to be selected, the buckets are filled in correctly") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
 
     val shelf = library.reachShelf(shelfIDForSimpleMathsUSEnglish).get
@@ -131,7 +131,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
   test("When only buckets 100 & 500 are provided (and rest are all random scorable questions), the buckets are filled in correctly") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val allZeroScoredQ = questAndAnsProcessedCategorySimpleMaths
       .filter(e => e.score == 0)
@@ -174,7 +174,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
   test("When all buckets are of random scorable questions and 5 questions are asked for, the buckets are filled in correctly") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val allZeroScoredQ = questAndAnsProcessedCategorySimpleGeography
       .filter(e => e.score == 0)

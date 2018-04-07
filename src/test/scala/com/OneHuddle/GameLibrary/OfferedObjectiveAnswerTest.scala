@@ -2,7 +2,7 @@ package com.OneHuddle.GameLibrary
 
 import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AllOfTheAboveObjectiveAnswer, AnswersAvailableInDB, NoneOfTheAboveObjectiveAnswer, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
 import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
-import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizButler}
+import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizDealer}
 import org.json4s.ShortTypeHints
 import org.json4s.jackson.Serialization
 import org.scalatest.{BeforeAndAfterAll, FunSuite, MustMatchers}
@@ -86,7 +86,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   test("Right order of answers is formed for marks (100), when 1 question is asked for, from the library") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
 
@@ -111,7 +111,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   test("Right order of answers is formed for marks (100,200,300,400), when 4 questions are asked for, from the library") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
 
@@ -167,7 +167,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   test("When multiple questions of same marks exist, only one of them is selected") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForIndiaUSEnglish).get
 
@@ -204,7 +204,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   test("When an answer has all incorrect options, an option for none of the above must be offered") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForIndiaUSEnglish).get
 
@@ -234,7 +234,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   test("When an answer has all correct options, an option for all of the above must be offered") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForIndiaUSEnglish).get
 
@@ -264,7 +264,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
   test("When an answer has only 2 options (correct and incorrect), it is included even if 4 options per questions are asked for") {
 
-    val quizButler = new QuizButler(library)
+    val quizButler = new QuizDealer(library)
 
     val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
 
