@@ -13,7 +13,7 @@ import QuizQuestionAnswerProtocol.{ObjectiveAnswer, PossibleAnswer, QAndObjAnswe
 
 // This class represents a rack of questions/answers, based on - in addition to Game's ID and Category - the language in
 // which questions and answers had been collected and stored.
-case class GameLibraryShelfID(gameID: Int, quizCategory: String, prefLang: String)
+case class GameLibraryShelfID(gameID: Int, gameCategory: String, prefLang: String)
 case class QnAShelf(
              val contents: List[QuestionAnswerPairPack],
              val qRandomizer:  (List[QuestionAnswerPairPack]) => List[QuestionAnswerPairPack],
@@ -143,7 +143,7 @@ case class GameLibrary(
 
   }
 
-  def arrangeAShelf(
+  def attachAShelf(
           shelfID: GameLibraryShelfID,
           bunchOfQnAFromDBJsonified: List[RawQuestionAnswerScoreTriple]): GameLibrary  = {
 

@@ -6,7 +6,7 @@ import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AllOfTheAboveO
 /**
   * Created by nirmalya on 3/28/18.
   */
-case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptionsPerAns: Int, shelf: QnAShelf) {
+case class ObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptionsPerAns: Int, shelf: QnAShelf) {
 
   type QAndObjAnswers = (Question,List[ObjectiveAnswer])
 
@@ -20,7 +20,7 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
   private var bucketwiseQnAPairs = Map[Int,Option[QAndObjAnswers]]()
 
   // First, we try to fill in every score-bucket, with a question/answer pair
-  def fillInScoreBuckets: OfferedObjectiveQuestionAndAnswerForQuiz  = {
+  def fillInScoreBuckets: ObjectiveQuestionAndAnswerForQuiz  = {
 
     this.bucketwiseQnAPairs = scoreBucketIDs.foldLeft(initializedEmptyOfferedSet)((accu,bucket) => {
 
@@ -39,7 +39,7 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
   // with that score, by the database. So we have to make a second run, to fill such empty buckets with questions
   // assigned to random bucket. Conventionally, such a bucket's ID is zero (0). After the partitioning below,left-side Map
   // contains unassigned buckets.
-  def fillInLeftOverEmptyScoreBuckets: OfferedObjectiveQuestionAndAnswerForQuiz  = {
+  def fillInLeftOverEmptyScoreBuckets: ObjectiveQuestionAndAnswerForQuiz  = {
 
     val splitIntoEmptyOrNot = this.bucketwiseQnAPairs.partition(e => e._2.isEmpty)
 
@@ -55,7 +55,7 @@ case class OfferedObjectiveQuestionAndAnswerForQuiz(countQues: Int, countOptions
       this
   }
 
-  def ensureCorrectAnswerIsEmbeddedAsNecessary: OfferedObjectiveQuestionAndAnswerForQuiz = {
+  def ensureCorrectAnswerIsEmbeddedAsNecessary: ObjectiveQuestionAndAnswerForQuiz = {
 
     this.bucketwiseQnAPairs =
       if (this.countOptionsPerAns == AllowedPerAnswer.FourOptions.id) {

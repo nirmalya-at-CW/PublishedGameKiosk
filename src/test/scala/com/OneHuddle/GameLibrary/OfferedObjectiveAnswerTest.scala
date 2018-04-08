@@ -2,7 +2,7 @@ package com.OneHuddle.GameLibrary
 
 import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AllOfTheAboveObjectiveAnswer, AnswersAvailableInDB, NoneOfTheAboveObjectiveAnswer, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
 import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
-import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizDealer}
+import com.OneHuddle.Quiz.{ObjectiveQuestionAndAnswerForQuiz, QuizDealer}
 import org.json4s.ShortTypeHints
 import org.json4s.jackson.Serialization
 import org.scalatest.{BeforeAndAfterAll, FunSuite, MustMatchers}
@@ -78,10 +78,10 @@ class OfferedObjectiveAnswerTest extends FunSuite
       dummyQuesRandomizer,
       dummyAnsRandomizer
     )
-    .arrangeAShelf(shelfIDForSoccerUSEnglish,       questAndAnsProcessedCategorySoccer)
-    .arrangeAShelf(shelfIDForIndiaUSEnglish,        questAndAnsProcessedCategoryIndia)
-    .arrangeAShelf(shelfIDForWorldHistoryUSEnglish, questAndAnsProcessedCategoryWorldHistory)
-    .arrangeAShelf(shelfIDForSubjectiveAnwers,      subjectiveQuestionAndAnswerSet)
+    .attachAShelf(shelfIDForSoccerUSEnglish,       questAndAnsProcessedCategorySoccer)
+    .attachAShelf(shelfIDForIndiaUSEnglish,        questAndAnsProcessedCategoryIndia)
+    .attachAShelf(shelfIDForWorldHistoryUSEnglish, questAndAnsProcessedCategoryWorldHistory)
+    .attachAShelf(shelfIDForSubjectiveAnwers,      subjectiveQuestionAndAnswerSet)
 
 
   test("Right order of answers is formed for marks (100), when 1 question is asked for, from the library") {
@@ -90,7 +90,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
 
-    val offered_1 = OfferedObjectiveQuestionAndAnswerForQuiz(1,4,shelf)
+    val offered_1 = ObjectiveQuestionAndAnswerForQuiz(1,4,shelf)
 
     val ordered_1 = offered_1.fillInScoreBuckets
       .fillInLeftOverEmptyScoreBuckets
@@ -115,7 +115,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
 
-    val offered_2 = OfferedObjectiveQuestionAndAnswerForQuiz(4,4,shelf)
+    val offered_2 = ObjectiveQuestionAndAnswerForQuiz(4,4,shelf)
 
     val ordered_2 = offered_2.fillInScoreBuckets
       .fillInLeftOverEmptyScoreBuckets
@@ -171,7 +171,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForIndiaUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(4,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(4,4,shelf)
 
     val ordered =
       offered
@@ -208,7 +208,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForIndiaUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
 
     val ordered =
       offered
@@ -238,7 +238,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForIndiaUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
 
     val ordered =
       offered
@@ -268,7 +268,7 @@ class OfferedObjectiveAnswerTest extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForSoccerUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
 
     val ordered =
       offered

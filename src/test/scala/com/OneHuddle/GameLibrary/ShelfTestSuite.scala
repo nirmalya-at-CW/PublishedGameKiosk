@@ -45,7 +45,7 @@ class ShelfTestSuite  extends FunSuite
           dummyQuesRandomizer,
           dummyAnsRandomizer
         )
-        .arrangeAShelf(shelfIDForSoccer,questAndAnsProcessed)
+        .attachAShelf(shelfIDForSoccer,questAndAnsProcessed)
 
       assert(library.reachShelf(shelfIDForSoccer).isEmpty == false)
       assert(library.reachShelf(shelfIDForSoccer).map(e => e.contents.length).get == 4)
@@ -104,7 +104,7 @@ class ShelfTestSuite  extends FunSuite
         dummyQuesRandomizer,
         dummyAnsRandomizer
       )
-      .arrangeAShelf(shelfIDForSoccer,questAndAnsProcessed)
+      .attachAShelf(shelfIDForSoccer,questAndAnsProcessed)
 
     assert(library.reachShelf(shelfIDForSoccer).isEmpty == false)
     assert(library.reachShelf(shelfIDForSoccer).map(e => e.contents.length).get == 4)

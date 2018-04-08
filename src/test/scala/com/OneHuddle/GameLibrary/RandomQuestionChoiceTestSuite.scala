@@ -1,6 +1,6 @@
 package com.OneHuddle.GameLibrary
 
-import com.OneHuddle.Quiz.{OfferedObjectiveQuestionAndAnswerForQuiz, QuizDealer}
+import com.OneHuddle.Quiz.{ObjectiveQuestionAndAnswerForQuiz, QuizDealer}
 import com.OneHuddle.Quiz.preparation.{GameLibrary, GameLibraryShelfID}
 import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AnswersAvailableInDB, ObjectiveAnswer, ObjectiveCorrectAnswer, ObjectiveIncorrectAnswer, Question, QuestionAnswerPairPack, RawQuestionAnswerScoreTriple}
 import org.json4s.ShortTypeHints
@@ -67,9 +67,9 @@ class RandomQuestionChoiceTestSuite extends FunSuite
       dummyQuesRandomizer,
       dummyAnsRandomizer
     )
-      .arrangeAShelf(shelfIDForWorldHistoryUSEnglish,    questAndAnsProcessedCategoryWorldHistory)
-      .arrangeAShelf(shelfIDForSimpleMathsUSEnglish,     questAndAnsProcessedCategorySimpleMaths)
-      .arrangeAShelf(shelfIDForSimpleGeographyUSEnglish, questAndAnsProcessedCategorySimpleGeography)
+      .attachAShelf(shelfIDForWorldHistoryUSEnglish,    questAndAnsProcessedCategoryWorldHistory)
+      .attachAShelf(shelfIDForSimpleMathsUSEnglish,     questAndAnsProcessedCategorySimpleMaths)
+      .attachAShelf(shelfIDForSimpleGeographyUSEnglish, questAndAnsProcessedCategorySimpleGeography)
 
   test("When a score bucket is missing from question-set, a random question fills in its place correctly") {
 
@@ -77,7 +77,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForWorldHistoryUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
 
     val ordered =
       offered
@@ -101,7 +101,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForSimpleMathsUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(4,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(4,4,shelf)
 
     val ordered =
       offered
@@ -140,7 +140,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForSimpleMathsUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
 
     val ordered =
       offered
@@ -183,7 +183,7 @@ class RandomQuestionChoiceTestSuite extends FunSuite
 
     val shelf = library.reachShelf(shelfIDForSimpleGeographyUSEnglish).get
 
-    val offered = OfferedObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
+    val offered = ObjectiveQuestionAndAnswerForQuiz(5,4,shelf)
 
     val ordered =
       offered

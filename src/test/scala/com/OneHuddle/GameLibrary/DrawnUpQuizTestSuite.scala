@@ -85,10 +85,10 @@ class DrawnUpQuizTestSuite extends FunSuite
       dummyQuesRandomizer,
       dummyAnsRandomizer
     )
-      .arrangeAShelf(shelfIDForSoccerUSEnglish,       questAndAnsProcessedCategorySoccer)
-      .arrangeAShelf(shelfIDForIndiaUSEnglish,        questAndAnsProcessedCategoryIndia)
-      .arrangeAShelf(shelfIDForWorldHistoryUSEnglish, questAndAnsProcessedCategoryWorldHistory)
-      .arrangeAShelf(shelfIDForSubjectiveAnwers,      subjectiveQuestionAndAnswerSet)
+      .attachAShelf(shelfIDForSoccerUSEnglish,       questAndAnsProcessedCategorySoccer)
+      .attachAShelf(shelfIDForIndiaUSEnglish,        questAndAnsProcessedCategoryIndia)
+      .attachAShelf(shelfIDForWorldHistoryUSEnglish, questAndAnsProcessedCategoryWorldHistory)
+      .attachAShelf(shelfIDForSubjectiveAnwers,      subjectiveQuestionAndAnswerSet)
 
   test ("Given a correct shelfID, the contents of a subjective quiz drawn are found as expected") {
 
@@ -134,7 +134,7 @@ class DrawnUpQuizTestSuite extends FunSuite
 
     val quizButler = new QuizDealer(library)
 
-    val producedObjectives = quizButler.dealAnObjectiveQuiz(shelfIDForSoccerUSEnglish,4,4)
+    val producedObjectives = quizButler.dealAnObjectiveQuiz(shelfIDForSoccerUSEnglish,numQuestionsReqd = 4,optionsPerAnswer = 4)
 
     assert(producedObjectives.length === 4)
 
@@ -149,6 +149,8 @@ class DrawnUpQuizTestSuite extends FunSuite
     assert(compact(producedObjectives(1).toJson) === expectedObjectives(1))
     assert(compact(producedObjectives(2).toJson) === expectedObjectives(2))
     assert(compact(producedObjectives(3).toJson) === expectedObjectives(3))
+
+    print(pretty(producedObjectives(0).toJson))
 
   }
 }

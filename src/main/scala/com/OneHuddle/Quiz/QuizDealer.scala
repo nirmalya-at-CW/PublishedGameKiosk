@@ -19,7 +19,7 @@ class QuizDealer(val library: GameLibrary) {
     this.library.reachShelf(shelfID) match {
 
       case Some(shelfToPickFrom)  =>
-                            OfferedSubjectiveQuestionAndAnswerForQuiz(numQuestionsReqd,shelfToPickFrom)
+                            SubjectiveQuestionAndAnswerForQuiz(numQuestionsReqd,shelfToPickFrom)
                              .fillInScoreBuckets
                              .fillInLeftOverEmptyScoreBuckets
                              .arrangeInOrderOfScores
@@ -37,7 +37,7 @@ class QuizDealer(val library: GameLibrary) {
     this.library.reachShelf(shelfID) match {
 
       case Some(shelfToPickFrom)  =>
-        OfferedObjectiveQuestionAndAnswerForQuiz(numQuestionsReqd, optionsPerAnswer, shelfToPickFrom)
+        ObjectiveQuestionAndAnswerForQuiz(numQuestionsReqd, optionsPerAnswer, shelfToPickFrom)
           .fillInScoreBuckets
           .fillInLeftOverEmptyScoreBuckets
           .ensureCorrectAnswerIsEmbeddedAsNecessary

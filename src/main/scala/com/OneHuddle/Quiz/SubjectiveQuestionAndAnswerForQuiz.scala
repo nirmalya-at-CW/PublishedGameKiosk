@@ -9,7 +9,7 @@ import com.OneHuddle.Quiz.preparation.QuizQuestionAnswerProtocol.{AllowedPerAnsw
 
 
 
-case class OfferedSubjectiveQuestionAndAnswerForQuiz(countQues: Int, shelf: QnAShelf) {
+case class SubjectiveQuestionAndAnswerForQuiz(countQues: Int, shelf: QnAShelf) {
 
   private val scoreBucketIDs = (1 to countQues) map (n => n * 100)
 
@@ -22,7 +22,7 @@ case class OfferedSubjectiveQuestionAndAnswerForQuiz(countQues: Int, shelf: QnAS
 
 
   // First, we try to fill in every score-bucket, with a question/answer pair
-  def fillInScoreBuckets: OfferedSubjectiveQuestionAndAnswerForQuiz  = {
+  def fillInScoreBuckets: SubjectiveQuestionAndAnswerForQuiz  = {
 
     this.bucketwiseQnAPairs = scoreBucketIDs.foldLeft(initializedEmptyOfferedSet)((accu,bucket) => {
 
@@ -42,7 +42,7 @@ case class OfferedSubjectiveQuestionAndAnswerForQuiz(countQues: Int, shelf: QnAS
   // with that score, by the database. So we have to make a second run, to fill such empty buckets with questions
   // assigned to random bucket. Conventionally, such a bucket's ID is zero (0). After the split below,left-side Map
   // contains unassigned buckets.
-  def fillInLeftOverEmptyScoreBuckets: OfferedSubjectiveQuestionAndAnswerForQuiz  = {
+  def fillInLeftOverEmptyScoreBuckets: SubjectiveQuestionAndAnswerForQuiz  = {
 
 
     val splitIntoEmptyOrNot = this.bucketwiseQnAPairs.span(e => e._2.isEmpty)
